@@ -2,5 +2,9 @@
   "name": "hackernews-graphql-backend",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "2",
+    "graphql": "14.6.0"
+  }
 }
