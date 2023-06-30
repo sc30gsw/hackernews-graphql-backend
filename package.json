@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "node index.js",
+    "dev": "ts-node src/server.ts",
     "build": "echo 'No build step'",
-    "start": "node index.js",
+    "start": "ts-node src/server.ts",
     "lint": "run-p -l -c --aggregate-output lint:*",
     "lint:eslint": "yarn run eslint .",
     "lint:prettier": "yarn run prettier --check .",
@@ -28,6 +28,7 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }
