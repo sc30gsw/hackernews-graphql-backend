@@ -16,7 +16,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "apollo-server": "2",
+    "@apollo/server": "^4.7.5",
     "graphql": "14.6.0"
   },
   "devDependencies": {
