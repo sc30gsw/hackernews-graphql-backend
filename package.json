@@ -3,21 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "dev": "ts-node src/server.ts",
+    "compile": "tsc",
+    "dev": "yarn compile && node ./dist/server.js",
     "build": "echo 'No build step'",
-    "start": "ts-node src/server.ts",
+    "start": "yarn compile && node ./dist/server.js",
     "lint": "run-p -l -c --aggregate-output lint:*",
     "lint:eslint": "yarn run eslint .",
     "lint:prettier": "yarn run prettier --check .",
     "format": "run-s format:prettier format:eslint",
     "format:eslint": "yarn run eslint --fix .",
-    "format:prettier": "yarn run prettier --write .",
-    "typecheck": "tsc"
+    "format:prettier": "yarn run prettier --write ."
   },
   "dependencies": {
     "@apollo/server": "^4.7.5",
-    "graphql": "14.6.0"
+    "graphql": "^16.7.1"
   },
   "devDependencies": {
     "@types/node": "^20.3.2",
@@ -28,7 +29,6 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
-    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }
