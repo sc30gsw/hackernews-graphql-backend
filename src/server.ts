@@ -1,10 +1,25 @@
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 
+let links = [
+  {
+    id: 'link-0',
+    description: 'GraphQLチュートリアルをUdemyで学ぶ',
+    url: 'www.udemy-graphql-tutorial.com',
+  },
+]
+
 // スキーマの定義
 const typeDefs = `#graphql
   type Query {
     info: String!
+    feed: [Link]!
+  }
+
+  type Link {
+    id: ID!
+    description: String!
+    url: String!
   }
 `
 
@@ -12,6 +27,7 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     info: () => 'HackerNewsクローン',
+    feed: () => links,
   },
 }
 
