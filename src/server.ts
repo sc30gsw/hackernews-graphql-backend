@@ -1,19 +1,19 @@
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 
-let links = [
-  {
-    id: 'link-0',
-    description: 'GraphQLチュートリアルをUdemyで学ぶ',
-    url: 'www.udemy-graphql-tutorial.com',
-  },
-]
+import type { Link } from './types/Link'
+
+const links: Link[] = []
 
 // スキーマの定義
 const typeDefs = `#graphql
   type Query {
     info: String!
     feed: [Link]!
+  }
+
+  type Mutation {
+    post(url: String!, description: String!): Link!
   }
 
   type Link {
@@ -28,6 +28,22 @@ const resolvers = {
   Query: {
     info: () => 'HackerNewsクローン',
     feed: () => links,
+  },
+
+  Mutation: {
+    post: async (_: unknown, args: { description: string; url: string }) => {
+      let idCount = links.length
+
+      const link = {
+        id: `link-${idCount++}`,
+        description: args.description,
+        url: args.url,
+      }
+
+      links.push(link)
+
+      return link
+    },
   },
 }
 
