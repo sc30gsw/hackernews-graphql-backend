@@ -1,27 +1,17 @@
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
+import { loadSchemaSync } from '@graphql-tools/load'
+import { addResolversToSchema } from '@graphql-tools/schema'
+import { join } from 'path'
 
-let links = [
-  {
-    id: 'link-0',
-    description: 'GraphQLチュートリアルをUdemyで学ぶ',
-    url: 'www.udemy-graphql-tutorial.com',
-  },
-]
+import type { Link } from './types/Link'
 
-// スキーマの定義
-const typeDefs = `#graphql
-  type Query {
-    info: String!
-    feed: [Link]!
-  }
+const links: Link[] = []
 
-  type Link {
-    id: ID!
-    description: String!
-    url: String!
-  }
-`
+const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
+  loaders: [new GraphQLFileLoader()],
+})
 
 // リゾルバー関数
 const resolvers = {
@@ -29,15 +19,34 @@ const resolvers = {
     info: () => 'HackerNewsクローン',
     feed: () => links,
   },
+
+  Mutation: {
+    post: async (_: unknown, args: { description: string; url: string }) => {
+      let idCount = links.length
+
+      const link = {
+        id: `link-${idCount++}`,
+        description: args.description,
+        url: args.url,
+      }
+
+      links.push(link)
+
+      return link
+    },
+  },
 }
 
+const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema: schemaWithResolvers,
 })
 
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
-})
+const startServer = async () => {
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 4000 },
+  })
+  console.log(`🚀  Server ready at: ${url}`)
+}
 
-console.log(`🚀  Server ready at: ${url}`)
+startServer()
