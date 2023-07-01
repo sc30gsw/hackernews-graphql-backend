@@ -3,11 +3,10 @@ import { startStandaloneServer } from '@apollo/server/standalone'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import { loadSchemaSync } from '@graphql-tools/load'
 import { addResolversToSchema } from '@graphql-tools/schema'
+import { PrismaClient } from '@prisma/client'
 import { join } from 'path'
 
-import type { Link } from './types/Link'
-
-const links: Link[] = []
+const prisma = new PrismaClient()
 
 const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
   loaders: [new GraphQLFileLoader()],
@@ -17,22 +16,19 @@ const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
 const resolvers = {
   Query: {
     info: () => 'HackerNewsクローン',
-    feed: () => links,
+    feed: () => prisma.link.findMany(),
   },
 
   Mutation: {
     post: async (_: unknown, args: { description: string; url: string }) => {
-      let idCount = links.length
+      const newLink = prisma.link.create({
+        data: {
+          url: args.url,
+          description: args.description,
+        },
+      })
 
-      const link = {
-        id: `link-${idCount++}`,
-        description: args.description,
-        url: args.url,
-      }
-
-      links.push(link)
-
-      return link
+      return newLink
     },
   },
 }
