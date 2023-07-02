@@ -1,15 +1,15 @@
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const prisma = new PrismaClient()
+import type { Context } from '@/types/Context'
 
 const APP_SECRET = process.env.APP_SECRET as string
 
 // ユーザー新規登録
 export const singUp = async (
   _: unknown,
-  args: { email: string; password: string; name: string }
+  args: { email: string; password: string; name: string },
+  context: Context
 ) => {
   // パスワードの設定
   const password = await bcrypt.hash(args.password, 10)
@@ -19,7 +19,7 @@ export const singUp = async (
   }
 
   // ユーザー新規作成
-  const user = await prisma.user.create({
+  const user = await context.prisma.user.create({
     data: {
       ...args,
       password,
@@ -41,9 +41,10 @@ export const singUp = async (
 // ユーザーログイン
 export const login = async (
   _: unknown,
-  args: { email: string; password: string }
+  args: { email: string; password: string },
+  context: Context
 ) => {
-  const user = await prisma.user.findUnique({
+  const user = await context.prisma.user.findUnique({
     where: { email: args.email },
   })
   if (!user) {
@@ -67,12 +68,16 @@ export const login = async (
 // ニュース投稿
 export const post = async (
   _: unknown,
-  args: { description: string; url: string }
+  args: { description: string; url: string },
+  context: Context
 ) => {
-  const newLink = await prisma.link.create({
+  const { userId } = context
+
+  const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
       description: args.description,
+      user: { connect: { id: userId } },
     },
   })
 

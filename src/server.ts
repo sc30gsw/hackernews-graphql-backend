@@ -8,7 +8,10 @@ import { addResolversToSchema } from '@graphql-tools/schema'
 import { PrismaClient } from '@prisma/client'
 import { join } from 'path'
 
-import type { Context } from './types/Context'
+import { user } from './resolvers/Link'
+import { login, post, singUp } from './resolvers/Mutation'
+import { feed } from './resolvers/Query'
+import { links } from './resolvers/User'
 import { getUserId } from './utils'
 
 const prisma = new PrismaClient()
@@ -20,27 +23,21 @@ const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
 // リゾルバー関数
 const resolvers = {
   Query: {
-    info: () => 'HackerNewsクローン',
-    feed: async (_: unknown, __: unknown, context: Context) => {
-      return context.prisma.link.findMany()
-    },
+    feed: feed,
   },
 
   Mutation: {
-    post: async (
-      _: unknown,
-      args: { description: string; url: string },
-      context: Context
-    ) => {
-      const newLink = context.prisma.link.create({
-        data: {
-          url: args.url,
-          description: args.description,
-        },
-      })
+    signUp: singUp,
+    login: login,
+    post: post,
+  },
 
-      return newLink
-    },
+  Link: {
+    user: user,
+  },
+
+  User: {
+    links: links,
   },
 }
 
@@ -51,7 +48,11 @@ const server = new ApolloServer({
 
 const startServer = async () => {
   const { url } = await startStandaloneServer(server, {
-    context: async () => ({ prisma }),
+    context: async ({ req }) => ({
+      ...req,
+      prisma,
+      userId: req && req.headers.authorization ? getUserId(req) : null,
+    }),
     listen: { port: 4000 },
   })
   console.log(`🚀  Server ready at: ${url}`)

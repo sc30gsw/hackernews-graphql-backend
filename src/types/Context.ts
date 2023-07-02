@@ -8,4 +8,5 @@ export type Context = {
     Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined,
     DefaultArgs
   >
+  userId: number
 }
