@@ -8,6 +8,9 @@ import { addResolversToSchema } from '@graphql-tools/schema'
 import { PrismaClient } from '@prisma/client'
 import { join } from 'path'
 
+import type { Context } from './types/Context'
+import { getUserId } from './utils'
+
 const prisma = new PrismaClient()
 
 const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
@@ -18,12 +21,18 @@ const schema = loadSchemaSync(join(__dirname, './schema.graphql'), {
 const resolvers = {
   Query: {
     info: () => 'HackerNewsクローン',
-    feed: () => prisma.link.findMany(),
+    feed: async (_: unknown, __: unknown, context: Context) => {
+      return context.prisma.link.findMany()
+    },
   },
 
   Mutation: {
-    post: async (_: unknown, args: { description: string; url: string }) => {
-      const newLink = prisma.link.create({
+    post: async (
+      _: unknown,
+      args: { description: string; url: string },
+      context: Context
+    ) => {
+      const newLink = context.prisma.link.create({
         data: {
           url: args.url,
           description: args.description,
@@ -42,6 +51,7 @@ const server = new ApolloServer({
 
 const startServer = async () => {
   const { url } = await startStandaloneServer(server, {
+    context: async () => ({ prisma }),
     listen: { port: 4000 },
   })
   console.log(`🚀  Server ready at: ${url}`)
