@@ -15,7 +15,7 @@ model Link {
   createdAt   DateTime @default(now())
   description String
   url         String
-  User        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int?
 }
 
