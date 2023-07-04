@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from '@prisma/client'
 import type { DefaultArgs } from '@prisma/client/runtime'
+import type { PubSub } from 'graphql-subscriptions'
 
 export type Context = {
   prisma: PrismaClient<
@@ -8,5 +9,6 @@ export type Context = {
     Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined,
     DefaultArgs
   >
-  userId: number
+  pubsub: PubSub
+  userId?: string | number
 }

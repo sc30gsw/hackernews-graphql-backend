@@ -65,7 +65,6 @@ export const login = async (
   }
 }
 
-// ニュース投稿
 export const post = async (
   _: unknown,
   args: { description: string; url: string },
@@ -77,9 +76,12 @@ export const post = async (
     data: {
       url: args.url,
       description: args.description,
-      user: { connect: { id: userId } },
+      user: { connect: { id: userId as number } },
     },
   })
+
+  // サブスクリプション送信（第一引数：トリガー名 / 第二引数：渡したい値）
+  context.pubsub.publish('NEW_LINK', { newLink })
 
   return newLink
 }
