@@ -19,6 +19,7 @@ type Link {
   description: String!
   url: String!
   user: User!
+  votes: [Vote!]!
 }
 
 type User {

@@ -16,7 +16,7 @@ import { createServer } from 'http'
 import { join } from 'path'
 import { WebSocketServer } from 'ws'
 
-import { user } from './resolvers/Link'
+import { user, votes } from './resolvers/Link'
 import { login, post, singUp, vote } from './resolvers/Mutation'
 import { feed } from './resolvers/Query'
 import { links } from './resolvers/User'
@@ -64,6 +64,7 @@ const resolvers = {
 
   Link: {
     user: user,
+    votes: votes,
   },
 
   User: {
