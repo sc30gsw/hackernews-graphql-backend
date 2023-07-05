@@ -17,11 +17,13 @@ import { join } from 'path'
 import { WebSocketServer } from 'ws'
 
 import { user } from './resolvers/Link'
-import { login, post, singUp } from './resolvers/Mutation'
+import { login, post, singUp, vote } from './resolvers/Mutation'
 import { feed } from './resolvers/Query'
 import { links } from './resolvers/User'
+import { link, voteUser } from './resolvers/Vote'
 import type { Context } from './types/Context'
-import type { publishLink } from './types/PublishLink'
+import type { NewLink } from './types/NewLink'
+import type { NewVote } from './types/NewVote'
 import { getUserId } from './utils'
 
 const PORT = 4000
@@ -45,14 +47,18 @@ const resolvers = {
     signUp: singUp,
     login: login,
     post: post,
+    vote: vote,
   },
 
   Subscription: {
     newLink: {
       subscribe: () => pubsub.asyncIterator(['NEW_LINK']),
-      resolve: async (payload: publishLink) => {
-        return payload
-      },
+      resolve: (payload: NewLink) => payload,
+    },
+
+    newVote: {
+      subscribe: () => pubsub.asyncIterator(['NEW_VOTE']),
+      resolve: (payload: NewVote) => payload,
     },
   },
 
@@ -62,6 +68,11 @@ const resolvers = {
 
   User: {
     links: links,
+  },
+
+  Vote: {
+    link: link,
+    user: voteUser,
   },
 }
 

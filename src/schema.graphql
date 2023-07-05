@@ -10,7 +10,8 @@ type Mutation {
 }
 
 type Subscription {
-  newLink: PublishLink
+  newLink: NewLink
+  newVote: NewVote
 }
 
 type Link {
@@ -38,9 +39,15 @@ type Vote {
   user: User!
 }
 
-type PublishLink {
+type NewLink {
   id: ID
   url: String
   description: String
+  user: User
+}
+
+type NewVote {
+  id: ID
+  link: Link
   user: User
 }

@@ -89,3 +89,39 @@ export const post = async (
 
   return newLink
 }
+
+export const vote = async (
+  _: unknown,
+  args: { linkId: string },
+  context: Context
+) => {
+  const userId = context.userId as number
+
+  const vote = await context.prisma.vote.findUnique({
+    where: {
+      linkId_userId: {
+        linkId: Number(args.linkId),
+        userId: userId,
+      },
+    },
+  })
+
+  if (vote) {
+    throw new Error(`Link is already voted: ${args.linkId}`)
+  }
+
+  const newVote = await context.prisma.vote.create({
+    data: {
+      user: { connect: { id: userId } },
+      link: { connect: { id: Number(args.linkId) } },
+    },
+    include: {
+      link: true,
+      user: true,
+    },
+  })
+
+  context.pubsub.publish('NEW_VOTE', newVote)
+
+  return newVote
+}
