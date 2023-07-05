@@ -7,3 +7,10 @@ export const user = (parent: { id: number }, __: unknown, context: Context) => {
     })
     .user()
 }
+
+export const votes = (parent: { id: number }, __: unknown, context: Context) =>
+  context.prisma.link
+    .findUnique({
+      where: { id: parent.id },
+    })
+    .votes()
