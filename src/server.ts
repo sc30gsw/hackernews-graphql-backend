@@ -21,6 +21,7 @@ import { login, post, singUp } from './resolvers/Mutation'
 import { feed } from './resolvers/Query'
 import { links } from './resolvers/User'
 import type { Context } from './types/Context'
+import type { publishLink } from './types/PublishLink'
 import { getUserId } from './utils'
 
 const PORT = 4000
@@ -48,7 +49,10 @@ const resolvers = {
 
   Subscription: {
     newLink: {
-      subscribe: () => pubsub.asyncIterator('NEW_LINK'),
+      subscribe: () => pubsub.asyncIterator(['NEW_LINK']),
+      resolve: async (payload: publishLink) => {
+        return payload
+      },
     },
   },
 

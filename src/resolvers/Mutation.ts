@@ -70,18 +70,29 @@ export const post = async (
   args: { description: string; url: string },
   context: Context
 ) => {
-  const { userId } = context
+  const userId = context.userId as number
 
   const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
       description: args.description,
-      user: { connect: { id: userId as number } },
+      user: { connect: { id: userId } },
     },
   })
 
-  // サブスクリプション送信（第一引数：トリガー名 / 第二引数：渡したい値）
-  context.pubsub.publish('NEW_LINK', { newLink })
+  const user = await context.prisma.user.findUnique({
+    where: { id: newLink.userId },
+  })
 
-  return newLink
+  const publishLink = {
+    id: newLink.id,
+    url: newLink.url,
+    description: newLink.description,
+    user: user,
+  }
+
+  // サブスクリプション送信（第一引数：トリガー名 / 第二引数：渡したい値）
+  context.pubsub.publish('NEW_LINK', publishLink)
+
+  return publishLink
 }
