@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client'
 
-export type publishLink = {
+export type newLink = {
   id: number
   url: string
   description: string

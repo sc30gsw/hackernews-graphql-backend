@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -78,21 +79,13 @@ export const post = async (
       description: args.description,
       user: { connect: { id: userId } },
     },
+    include: {
+      user: true,
+    },
   })
-
-  const user = await context.prisma.user.findUnique({
-    where: { id: newLink.userId },
-  })
-
-  const publishLink = {
-    id: newLink.id,
-    url: newLink.url,
-    description: newLink.description,
-    user: user,
-  }
 
   // サブスクリプション送信（第一引数：トリガー名 / 第二引数：渡したい値）
-  context.pubsub.publish('NEW_LINK', publishLink)
+  context.pubsub.publish('NEW_LINK', newLink)
 
-  return publishLink
+  return newLink
 }
